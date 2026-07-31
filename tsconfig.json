@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "rootDir": "webapp",
+    "baseUrl": "./",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "paths": {
+      "sample/webcomponents/openui5/*": ["webapp/*"]
+    }
+  },
+  "include": ["webapp/**/*"]
+}

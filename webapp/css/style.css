@@ -1,0 +1,80 @@
+html,
+body {
+	height: 100%;
+}
+
+.app {
+	height: 100%;
+	background-color: var(--sapBackgroundColor);
+}
+
+.app-header-logo {
+	height: 1.75rem;
+}
+
+.app-bar-theming-popover,
+.app-bar-profile-popover {
+	width: 250px;
+}
+
+/* Highlighted band behind the create-todo row (padding/margin via sapUi* classes). */
+.create-todo-wrapper {
+	box-sizing: border-box;
+	background-color: var(--sapObjectHeader_Background);
+	gap: 0.5rem;
+}
+
+.li-content-actions {
+	display: flex;
+}
+
+.add-input {
+	flex: auto;
+}
+
+.li-content-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dialog-content {
+	max-width: 320px;
+	padding: 2rem;
+}
+
+.title-textarea {
+	height: 100px;
+	display: inline-block;
+	width: 100%;
+}
+
+.profile-settings {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+.profile-text {
+	margin-inline-start: 1rem;
+	margin-inline-end: 2rem;
+}
+
+.profile-settings-list {
+	margin-top: 1.25rem;
+}
+
+.profile-rtl-switch {
+	width: 100%;
+	padding: 0.25rem 0;
+}
+
+@media (max-width: 600px) {
+	.create-todo-wrapper {
+		flex-direction: column;
+	}
+
+	.add-input {
+		width: 100%;
+	}
+}

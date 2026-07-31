@@ -1,0 +1,221 @@
+<mvc:View
+	controllerName="sample.webcomponents.openui5.controller.App"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns="sap.m"
+	xmlns:webc="@ui5/webcomponents/dist"
+	xmlns:fiori="@ui5/webcomponents-fiori/dist"
+	xmlns:ca="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	displayBlock="true"
+	core:require="{
+		iconPalette: '@ui5/webcomponents-icons/dist/palette',
+		iconSettings: '@ui5/webcomponents-icons/dist/settings',
+		iconSysHelp: '@ui5/webcomponents-icons/dist/sys-help',
+		iconLog: '@ui5/webcomponents-icons/dist/log'
+	}"
+>
+	<!--
+		OpenUI5/SAPUI5 + UI5 Web Components todo sample.
+		Web Components are XML nodes via the `webc` (@ui5/webcomponents/dist) and
+		`webcf` (@ui5/webcomponents-fiori/dist) namespaces, resolved by ui5-tooling-modules.
+		Slots are expressed as aggregation wrapper elements (e.g. <fiori:profile>).
+	-->
+	<VBox class="app" height="100%">
+		<!-- ShellBar -->
+		<fiori:ShellBar
+			id="shellBar"
+			primaryTitle="UI5 Web Components OpenUI5/SAPUI5 Sample Application"
+			showNotifications="true"
+			notificationsCount="2"
+			profileClick=".onProfileClick"
+		>
+			<fiori:profile>
+				<webc:Avatar id="profileAvatar" size="XS" initials="JD" />
+			</fiori:profile>
+			<fiori:logo>
+				<Image src="./img/logo.png" alt="logo" class="app-header-logo" />
+			</fiori:logo>
+			<fiori:ShellBarItem icon="palette" text="Theme" click=".onThemeSettingsToggle" />
+		</fiori:ShellBar>
+
+		<!-- Tabs -->
+		<webc:TabContainer collapsed="true">
+			<webc:Tab text="My Todos" />
+		</webc:TabContainer>
+
+		<!-- Content -->
+		<VBox class="app-content sapUiSmallMarginBeginEnd">
+			<!-- Create todo -->
+			<HBox class="create-todo-wrapper sapUiMediumMarginTop sapUiContentPadding" width="100%" alignItems="Center">
+				<webc:Input
+					id="todoInput"
+					placeholder="Type a task..."
+					class="add-input"
+					width="100%"
+				>
+					<webc:layoutData>
+						<FlexItemData growFactor="1" />
+					</webc:layoutData>
+				</webc:Input>
+				<webc:DatePicker
+					id="todoDeadline"
+					formatPattern="dd/MM/yyyy"
+					class="sapUiSmallMarginBeginEnd"
+				/>
+				<webc:Button
+					id="addButton"
+					class="add-button"
+					design="Emphasized"
+					click=".onAdd"
+					text="Add Todo"
+				/>
+			</HBox>
+
+			<!-- Todo lists -->
+			<VBox class="sapUiMediumMarginTop">
+				<webc:Panel headerText="Incompleted Tasks" class="sapUiMediumMarginBottom">
+					<webc:List
+						selectionMode="Multiple"
+						selectionChange=".onDone"
+						items="{path: '/todos', filters: [{path: 'done', operator: 'EQ', value1: false}]}"
+					>
+						<webc:ListItemCustom>
+							<HBox class="li-content" width="100%" justifyContent="SpaceBetween" alignItems="Center">
+								<webc:Label class="li-content-text" text="{text} - finish before: {deadline}" />
+								<HBox class="li-content-actions">
+									<webc:Button class="sapUiSmallMarginEnd" text="Edit" click=".onEdit" />
+									<webc:Button design="Negative" text="Delete" click=".onRemove" />
+								</HBox>
+							</HBox>
+						</webc:ListItemCustom>
+					</webc:List>
+				</webc:Panel>
+
+				<webc:Panel headerText="Completed Tasks" class="sapUiMediumMarginBottom">
+					<webc:List
+						selectionMode="Multiple"
+						selectionChange=".onUnDone"
+						items="{path: '/todos', filters: [{path: 'done', operator: 'EQ', value1: true}]}"
+					>
+						<webc:ListItemCustom selected="true">
+							<HBox class="li-content" width="100%" justifyContent="SpaceBetween" alignItems="Center">
+								<webc:Label class="li-content-text" text="{text} - finish before: {deadline}" />
+								<HBox class="li-content-actions">
+									<webc:Button class="sapUiSmallMarginEnd" text="Edit" click=".onEdit" />
+									<webc:Button design="Negative" text="Delete" click=".onRemove" />
+								</HBox>
+							</HBox>
+						</webc:ListItemCustom>
+					</webc:List>
+				</webc:Panel>
+			</VBox>
+		</VBox>
+	</VBox>
+
+	<!-- Edit dialog -->
+	<webc:Dialog id="editDialog" headerText="Edit Todo">
+		<VBox class="dialog-content">
+			<VBox class="edit-wrapper">
+				<webc:Label text="Title:" />
+				<webc:TextArea
+					id="titleEditInput"
+					class="title-textarea"
+					maxlength="24"
+					showExceededText="true"
+					value="{/todoBeingEdited/text}"
+				/>
+			</VBox>
+			<VBox class="edit-wrapper date-edit-fields">
+				<webc:Label text="Date:" />
+				<webc:DatePicker
+					id="dateEditInput"
+					formatPattern="dd/MM/yyyy"
+					value="{/todoBeingEdited/deadline}"
+				/>
+			</VBox>
+		</VBox>
+		<webc:footer>
+			<HBox width="100%" justifyContent="End" class="sapUiTinyMargin">
+				<webc:Button class="sapUiTinyMarginEnd" design="Transparent" text="Cancel" click=".onCancelEdit" />
+				<webc:Button design="Emphasized" text="Save" click=".onSaveEdit" />
+			</HBox>
+		</webc:footer>
+	</webc:Dialog>
+
+	<!-- Theme popover -->
+	<webc:Popover
+		id="themePopover"
+		class="app-bar-theming-popover"
+		placement="Bottom"
+		horizontalAlign="End"
+		headerText="Theme"
+	>
+		<webc:List selectionMode="Single" selectionChange=".onThemeChange">
+			<webc:ListItemStandard icon="palette" ca:theme="sap_horizon" selected="true" text="SAP Horizon Morning" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_horizon_dark" text="SAP Horizon Evening" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_horizon_hcb" text="SAP Horizon HCB" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_horizon_hcw" text="SAP Horizon HCW" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_fiori_3" text="SAP Quartz Light" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_fiori_3_dark" text="SAP Quartz Dark" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_fiori_3_hcb" text="SAP Quartz HCB" />
+			<webc:ListItemStandard icon="palette" ca:theme="sap_fiori_3_hcw" text="SAP Quartz HCW" />
+		</webc:List>
+	</webc:Popover>
+
+	<!-- Profile popover -->
+	<webc:Popover
+		id="profilePopover"
+		class="app-bar-profile-popover"
+		placement="Bottom"
+		horizontalAlign="End"
+	>
+		<HBox class="profile-settings" alignItems="Center">
+			<webc:Avatar size="M" initials="JD" />
+			<VBox class="profile-text" justifyContent="Center">
+				<webc:Title level="H3" text="John Doe" />
+				<webc:Label text="OpenUI5/SAPUI5 Developer" />
+			</VBox>
+		</HBox>
+		<VBox class="profile-settings-list">
+			<webc:List selectionMode="Single" separators="None" itemClick=".onProfileSettingsSelect">
+				<webc:ListItemStandard icon="settings" ca:key="settings" text="Settings" />
+				<webc:ListItemStandard icon="sys-help" ca:key="help" text="Help" />
+				<webc:ListItemStandard icon="log" ca:key="sign-out" text="Sign out" />
+			</webc:List>
+		</VBox>
+	</webc:Popover>
+
+	<!-- Settings dialog -->
+	<webc:Dialog id="settingsDialog" headerText="Profile Settings" draggable="true">
+		<HBox class="profile-rtl-switch" width="100%" alignItems="Center" justifyContent="SpaceBetween">
+			<webc:Label class="profile-rtl-switch-text" text="RTL" />
+			<webc:Switch change=".onRtlSwitchChange" />
+		</HBox>
+		<HBox class="profile-rtl-switch" width="100%" alignItems="Center" justifyContent="SpaceBetween">
+			<webc:Label class="profile-rtl-switch-text" text="Compact" />
+			<webc:Switch change=".onContentDensitySwitchChange" />
+		</HBox>
+		<webc:footer>
+			<HBox width="100%" justifyContent="End" class="sapUiTinyMargin">
+				<webc:Button design="Emphasized" text="Close" click=".onSettingsDialogClose" />
+			</HBox>
+		</webc:footer>
+	</webc:Dialog>
+
+	<!-- Help dialog -->
+	<webc:Dialog id="helpDialog" headerText="Help" preventInitialFocus="true">
+		<VBox alignItems="Center">
+			<webc:Title level="H5" text="UI5 Web Components OpenUI5/SAPUI5 Sample App" />
+		</VBox>
+		<FormattedText
+			class="sapUiSmallMarginTop"
+			htmlText="&lt;b&gt;Release&lt;/b&gt;: b225.20220729335 &lt;br&gt;&lt;b&gt;Server&lt;/b&gt;: 31pc212x3132 &lt;br&gt;&lt;b&gt;Company ID&lt;/b&gt;: SAP &lt;br&gt;&lt;b&gt;UI version&lt;/b&gt;: SAP Fiori &lt;br&gt;&lt;b&gt;Edition&lt;/b&gt;: Enterprise"
+		/>
+		<webc:Link href="https://github.com/UI5/sample-webcomponets-openui5" target="_blank" text="documentation" />
+		<webc:footer>
+			<HBox width="100%" justifyContent="End" class="sapUiTinyMargin">
+				<webc:Button design="Emphasized" text="Close" click=".onHelpDialogClose" />
+			</HBox>
+		</webc:footer>
+	</webc:Dialog>
+</mvc:View>
